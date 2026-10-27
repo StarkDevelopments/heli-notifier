@@ -1,0 +1,48 @@
+# Long-running alerter for a fixed ground position.
+#
+#   docker compose up -d --build   start it (detached, restart-safe)
+#   docker compose logs -f         follow it
+#   docker compose run --rm heli-notifier watch --once --dry-run   one poll, logged only
+#
+# One service, running until stopped. On a Raspberry Pi the image is pulled for
+# linux/arm64; the project has no third-party Python dependencies, so the build
+# is not architecture specific and the image is small.
+
+services:
+  heli-notifier:
+    build: .
+    image: heli-notifier:latest
+    container_name: heli-notifier
+    restart: unless-stopped
+    # Holds the adsbdb identity-lookup cache, so a restart does not re-fetch
+    # every registration. Named rather than a bind mount: it inherits the
+    # image's ownership on first use, which removes the whole class of
+    # "root-owned data directory" failures.
+    volumes:
+      - heli-data:/data
+    # The .env file holds your position and the Pushover credentials and is NOT
+    # committed. If it is missing, compose fails loudly here rather than
+    # starting an alerter that quietly logs instead of notifying, which is the
+    # failure that matters.
+    env_file:
+      - .env
+    # Position and radii are site data: they come from .env (env_file above),
+    # which is gitignored. Keep them out of this file.
+    environment:
+      HELI_NOTIFIER_DATA_DIR: /data
+      PYTHONUNBUFFERED: "1"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+volumes:
+  heli-data:
+    # Fixed name so run.sh can share the same volume; compose would otherwise
+    # prefix it with the project directory name.
+    name: heli-notifier-data

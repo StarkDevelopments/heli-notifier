@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heli-notifier"
+version = "0.1.0"
+description = "Aircraft alerter for a fixed ground position"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+# Intentionally empty. The project runs on the standard library alone so it
+# works on a Raspberry Pi with no build step and nothing to go stale.
+dependencies = []
+
+[project.scripts]
+heli-notifier = "heli_notifier.cli:main"
+
+[tool.setuptools]
+packages = ["heli_notifier", "heli_notifier.sources"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["B008"]

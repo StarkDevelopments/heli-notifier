@@ -1,0 +1,16 @@
+# Keep the runtime image lean: tests, fixtures, credentials and local data
+# never belong in it.
+tests/
+fixtures/
+data/
+.env
+
+.git/
+.gitignore
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+*.md
+!README.md

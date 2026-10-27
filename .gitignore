@@ -1,0 +1,14 @@
+# Local state: the adsbdb identity cache written by runs outside Docker (the
+# always-on alerter uses the heli-notifier-data volume instead).
+data/
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Pushover credentials. .env.example is the committable template.
+.env
+
+# Local deployment helper; may contain machine-specific paths.
+update.sh
